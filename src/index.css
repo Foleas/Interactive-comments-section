@@ -8,14 +8,14 @@
   line-height: 1.5;
   font-weight: 400;
 
-  --color-blue-moderate: "#5457b6";
-  --color-blue-light-grayish: "#c3c4ef";
-  --color-blue-grayish: "#67727e";
-  --color-blue-dark: "#324152";
-  --color-red-soft: "#ed6468";
-  --color-red-pale: "#ffb8bb";
-  --color-gray-very-light: "#f5f6fa";
-  --color-gray-light: "#eaecf1";
+  --color-blue-moderate: #5457b6;
+  --color-blue-light-grayish: #c3c4ef;
+  --color-blue-grayish: #67727e;
+  --color-blue-dark: #324152;
+  --color-red-soft: #ed6468;
+  --color-red-pale: #ffb8bb;
+  --color-gray-very-light: #f5f6fa;
+  --color-gray-light: #eaecf1;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
