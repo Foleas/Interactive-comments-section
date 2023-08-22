@@ -8,13 +8,12 @@ interface CommentBoxProps {
   createdAt: string;
   score: number;
   user: CommentUser;
-  replies?: Comment[];
 }
 
 const CommentBox = (props: CommentBoxProps) => {
-  const { user, content, createdAt, score, replies } = props;
+  const { user, content, createdAt, score } = props;
   return (
-    <div className="bg-white rounded-md p-5 flex gap-5 items-start mb-5 last:mb-0">
+    <div className="comment bg-white shadow-md rounded-md p-5 flex gap-5 items-start mb-5 last:mb-0">
       <div className="score flex-[0_0_40px] bg-gray-light rounded-md">
         <button className="w-full h-[40px] fill-blue-lightGrayish hover:fill-blue-moderate">
           <IconPlus className="ml-auto mr-auto transition-[fill]" />
@@ -42,8 +41,6 @@ const CommentBox = (props: CommentBoxProps) => {
           <p>{content}</p>
         </div>
       </div>
-
-      {replies?.map((c) => c.content)}
     </div>
   );
 };
