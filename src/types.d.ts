@@ -7,11 +7,11 @@ export type CommentUser = {
   username: string;
 };
 
-export type Comment = {
+export type CommentItem = {
   id: number;
   content: string;
   createdAt: string;
   score: number;
   user: CommentUser;
-  replies?: Comment[];
+  replies?: CommentItem[];
 };
