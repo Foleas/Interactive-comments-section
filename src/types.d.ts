@@ -7,6 +7,13 @@ export type CommentUser = {
   username: string;
 };
 
+export type ScoreAction = "up" | "down";
+
+export type UserVote = {
+  username: string;
+  action: ScoreAction;
+};
+
 export type CommentItem = {
   id: number;
   content: string;
@@ -14,4 +21,5 @@ export type CommentItem = {
   score: number;
   user: CommentUser;
   replies?: CommentItem[];
+  userVotes: UserVote[];
 };
