@@ -17,7 +17,7 @@ export type UserVote = {
 export type CommentItem = {
   id: number;
   content: string;
-  createdAt: string;
+  createdAt: number;
   score: number;
   user: CommentUser;
   replies?: CommentItem[];
