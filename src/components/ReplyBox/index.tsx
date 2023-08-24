@@ -4,10 +4,19 @@ import Button from "../common/Button";
 
 interface ReplyBoxProps {
   user: CommentUser;
+  buttonText: string;
+  parentId?: number;
   addCommentData: AddCommentHandler;
+  setIsReplying: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ReplyBox = ({ user, addCommentData }: ReplyBoxProps) => {
+const ReplyBox = ({
+  user,
+  buttonText,
+  parentId = 0,
+  addCommentData,
+  setIsReplying,
+}: ReplyBoxProps) => {
   const [comment, setComment] = useState("");
 
   return (
@@ -21,11 +30,12 @@ const ReplyBox = ({ user, addCommentData }: ReplyBoxProps) => {
         onChange={({ target }) => setComment(target.value)}
       />
       <Button
-        text="SEND"
+        text={buttonText}
         disabled={comment === ""}
         onClickHandler={() => {
-          addCommentData(user, comment);
+          addCommentData(user, comment, parentId);
           setComment("");
+          setIsReplying(false);
         }}
       />
     </div>

@@ -20,10 +20,20 @@ export type CommentItem = {
   createdAt: number;
   score: number;
   user: CommentUser;
-  replies?: CommentItem[];
+  replies: CommentItem[];
   userVotes: UserVote[];
 };
 
 // COMMENT HANLDLERS
 
-export type AddCommentHandler = (user: CommentUser, content: string) => void;
+export type UpdateScoreHandler = (
+  id: number,
+  newScore: number,
+  action: ScoreAction
+) => void;
+
+export type AddCommentHandler = (
+  user: CommentUser,
+  content: string,
+  parentId?: number
+) => void;

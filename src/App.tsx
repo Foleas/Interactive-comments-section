@@ -23,6 +23,10 @@ function App() {
   const [comments, setComments] = useState<Array<CommentItem>>([]);
 
   useEffect(() => {
+    // helper o servicio que devueleve
+
+    // actualizo estado
+
     if (getLocalStorage("comments")) {
       setCurrentUser(getLocalStorage("currentUser") as CommentUser);
       setComments(getLocalStorage("comments") as CommentItem[]);
@@ -81,7 +85,8 @@ function App() {
     setLocalStorage("comments", updatedComments);
   };
 
-  const addCommentData: AddCommentHandler = (user, content) => {
+  const addCommentData: AddCommentHandler = (user, content, parentId = 0) => {
+    // console.log("addCommentData", "parentID", parentId);
     const newId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 
     const newComment: CommentItem = {
@@ -100,53 +105,84 @@ function App() {
       userVotes: [],
     };
 
-    setComments([...comments, newComment]);
+    if (parentId === 0) {
+      setComments([...comments, newComment]);
+    } else {
+      setComments(updateComment(comments, parentId, newComment));
+    }
+  };
+
+  const updateComment = (
+    comments: CommentItem[],
+    parentId: number,
+    newComment: CommentItem
+  ) => {
+    const updatedComments = comments.map((comment) => {
+      if (comment.id === parentId) {
+        return {
+          ...comment,
+          replies: [...comment.replies, newComment],
+        };
+      } else if (comment.replies && comment.replies.length > 0) {
+        // updateComment(comment.replies, parentId, newComment);
+        const updatedReplies: CommentItem[] = updateComment(
+          comment.replies,
+          parentId,
+          newComment
+        );
+        return {
+          ...comment,
+          replies: updatedReplies,
+        };
+      }
+      return comment;
+    });
+
+    return updatedComments;
+  };
+
+  const renderComments = (comments: CommentItem[]) => {
+    {
+      return comments?.map((c) => {
+        const { id, content, user, createdAt, score, userVotes, replies } = c;
+        return (
+          <React.Fragment key={`fragment-comment-${id}`}>
+            <CommentBox
+              key={`comment-${id}`}
+              id={id}
+              content={content}
+              user={user}
+              createdAt={createdAt}
+              userVotes={userVotes?.filter(
+                ({ username }) => username === currentUser.username
+              )}
+              score={score}
+              updateScoreData={updateScoreData}
+              currentUser={currentUser}
+              addCommentData={addCommentData}
+            />
+            {replies && replies.length > 0 && (
+              <div className="replies relative ml-10 pl-10">
+                <div className="border-l border-blue-light-grayish block absolute top-0 left-0 w-px h-full shadow-[-2px_0_2px_0_rgba(195,196,239,0.25)]"></div>
+                {renderComments(replies)}
+              </div>
+            )}
+          </React.Fragment>
+        );
+      });
+    }
   };
 
   return (
     <main>
       <div className="comments-list-wrapper max-w-screen-md ml-auto mr-auto pt-10 pb-10">
-        {comments?.map((c) => {
-          const { id, content, user, createdAt, score, userVotes, replies } = c;
-          return (
-            <React.Fragment key={`fragment-comment-${id}`}>
-              <CommentBox
-                key={`comment-${id}`}
-                id={id}
-                content={content}
-                user={user}
-                createdAt={createdAt}
-                userVotes={userVotes?.filter(
-                  ({ username }) => username === currentUser.username
-                )}
-                score={score}
-                updateScoreData={updateScoreData}
-              />
-              {replies && replies.length > 0 && (
-                <div className="replies relative ml-10 pl-10">
-                  <div className="border-l border-blue-light-grayish block absolute top-0 left-0 w-px h-full shadow-[-2px_0_2px_0_rgba(195,196,239,0.25)]"></div>
-                  {replies?.map((c) => (
-                    <CommentBox
-                      key={`comment-reply-${c.id}`}
-                      id={c.id}
-                      content={c.content}
-                      user={c.user}
-                      createdAt={c.createdAt}
-                      userVotes={c.userVotes?.filter(
-                        ({ username }) => username === currentUser.username
-                      )}
-                      score={c.score}
-                      updateScoreData={updateScoreData}
-                    />
-                  ))}
-                </div>
-              )}
-            </React.Fragment>
-          );
-        })}
-
+        {renderComments(comments)}
         {currentUser && (
-          <ReplyBox user={currentUser} addCommentData={addCommentData} />
+          <ReplyBox
+            user={currentUser}
+            buttonText="SEND"
+            addCommentData={addCommentData}
+          />
         )}
       </div>
     </main>
