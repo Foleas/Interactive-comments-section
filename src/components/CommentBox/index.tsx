@@ -3,11 +3,12 @@ import { CommentUser, UserVote, ScoreAction } from "../../types";
 import { ReactComponent as IconPlus } from "../../assets/icons/icon-plus.svg";
 import { ReactComponent as IconMinus } from "../../assets/icons/icon-minus.svg";
 import { ReactComponent as IconReply } from "../../assets/icons/icon-reply.svg";
+import { getFormatedDate } from "../../utils/getDate";
 
 interface CommentBoxProps {
   id: number;
   content: string;
-  createdAt: string;
+  createdAt: number;
   user: CommentUser;
   userVotes: UserVote[];
   score: number;
@@ -44,7 +45,7 @@ const CommentBox = (props: CommentBoxProps) => {
   const buttonClass = "w-full h-[40px] fill-blue-lightGrayish ";
 
   return (
-    <div className="comment bg-white shadow-md rounded-md p-5 flex gap-5 items-start mb-5 last:mb-0">
+    <div className="comment bg-white shadow-md rounded-md p-5 flex gap-5 items-start mb-5">
       <div className="score flex-[0_0_40px] bg-gray-light rounded-md">
         <button
           className={`${buttonClass} ${
@@ -75,7 +76,7 @@ const CommentBox = (props: CommentBoxProps) => {
           <div className="user flex items-center gap-3">
             <img className="w-8" src={user.image.png} alt={user.username} />
             <p className="text-blue-dark font-bold">{user.username}</p>
-            <p>{createdAt}</p>
+            <p>{getFormatedDate(createdAt)}</p>
           </div>
           <div className="action">
             <button className="reply-btn flex items-center gap-3 fill-blue-moderate hover:fill-blue-lightGrayish text-blue-moderate hover:text-blue-lightGrayish">
