@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import CommentBox from "./components/CommentBox";
-import { CommentItem, CommentUser, UserVote, ScoreAction } from "./types";
+import {
+  CommentItem,
+  CommentUser,
+  UserVote,
+  ScoreAction,
+  AddCommentHandler,
+} from "./types";
 import React from "react";
 import { getLocalStorage, setLocalStorage } from "./utils/localStorage";
+import ReplyBox from "./components/ReplyBox";
 
 function App() {
   const [currentUser, setCurrentUser] = useState<CommentUser>({
@@ -74,6 +81,28 @@ function App() {
     setLocalStorage("comments", updatedComments);
   };
 
+  const addCommentData: AddCommentHandler = (user, content) => {
+    const newId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+
+    const newComment: CommentItem = {
+      id: newId,
+      content,
+      createdAt: Date.now(),
+      score: 0,
+      user: {
+        image: {
+          png: user.image.png,
+          webp: user.image.webp,
+        },
+        username: user.username,
+      },
+      replies: [],
+      userVotes: [],
+    };
+
+    setComments([...comments, newComment]);
+  };
+
   return (
     <main>
       <div className="comments-list-wrapper max-w-screen-md ml-auto mr-auto pt-10 pb-10">
@@ -115,6 +144,10 @@ function App() {
             </React.Fragment>
           );
         })}
+
+        {currentUser && (
+          <ReplyBox user={currentUser} addCommentData={addCommentData} />
+        )}
       </div>
     </main>
   );

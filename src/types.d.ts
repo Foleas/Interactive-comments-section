@@ -23,3 +23,7 @@ export type CommentItem = {
   replies?: CommentItem[];
   userVotes: UserVote[];
 };
+
+// COMMENT HANLDLERS
+
+export type AddCommentHandler = (user: CommentUser, content: string) => void;
