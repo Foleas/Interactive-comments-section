@@ -128,7 +128,9 @@ function App() {
       if (comment.id === parentId) {
         return {
           ...comment,
-          replies: [...comment.replies, newComment],
+          replies: comment.replies
+            ? [...comment.replies, newComment]
+            : [newComment],
         };
       } else if (comment.replies && comment.replies.length > 0) {
         // updateComment(comment.replies, parentId, newComment);
