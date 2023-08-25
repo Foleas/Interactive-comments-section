@@ -5,6 +5,8 @@ import {
   ScoreAction,
   AddCommentHandler,
   UpdateScoreHandler,
+  EditCommentHandler,
+  CommentItem,
 } from "../../types";
 import { ReactComponent as IconPlus } from "../../assets/icons/icon-plus.svg";
 import { ReactComponent as IconMinus } from "../../assets/icons/icon-minus.svg";
@@ -13,6 +15,7 @@ import { ReactComponent as IconDelete } from "../../assets/icons/icon-delete.svg
 import { ReactComponent as IconEdit } from "../../assets/icons/icon-edit.svg";
 import { getFormatedDate } from "../../utils/getDate";
 import ReplyBox from "../ReplyBox";
+import Button from "../common/Button";
 
 interface CommentBoxProps {
   id: number;
@@ -25,7 +28,9 @@ interface CommentBoxProps {
   updateScoreData: UpdateScoreHandler;
   currentUser: CommentUser;
   addCommentData: AddCommentHandler;
+  onEditComment?: EditCommentHandler;
   onDeleteComment?: () => void;
+  setComments: React.Dispatch<React.SetStateAction<CommentItem[]>>;
 }
 
 const CommentBox = (props: CommentBoxProps) => {
@@ -40,9 +45,15 @@ const CommentBox = (props: CommentBoxProps) => {
     updateScoreData,
     currentUser,
     addCommentData,
+    onEditComment,
     onDeleteComment,
+    setComments,
   } = props;
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editComment, setEditComment] = useState(
+    replyingTo ? `@${replyingTo} ${content}` : content
+  );
   const [isReplying, setIsReplying] = useState(false);
   const [scoreState, setScoreState] = useState(score);
   const [scoreAction, setScoreAction] = useState<ScoreAction>(
@@ -130,7 +141,7 @@ const CommentBox = (props: CommentBoxProps) => {
                   </button>
                   <button
                     className={`edit-btn ${actionButtonClass} ${actionButtonBlueClass}`}
-                    onClick={() => null}
+                    onClick={() => setIsEditing(true)}
                   >
                     <IconEdit className="transition-[fill]" />
                     <p className="transition-colors">Edit</p>
@@ -147,15 +158,36 @@ const CommentBox = (props: CommentBoxProps) => {
               )}
             </div>
           </div>
-          <div className="comment">
-            <p>
-              {replyingTo && (
-                <span className="text-blue-moderate font-bold">
-                  @{replyingTo}{" "}
-                </span>
-              )}
-              {content}
-            </p>
+          <div className="comment w-full">
+            {isEditing ? (
+              <>
+                <textarea
+                  name="comment"
+                  className="rounded-md transition-colors border border-gray-light focus:border-blue-moderate outline-none w-full h-[96px] py-3 px-6 resize-none"
+                  value={editComment}
+                  onChange={({ target }) => setEditComment(target.value)}
+                />
+                <Button
+                  text="Update"
+                  disabled={editComment === ""}
+                  onClickHandler={() => {
+                    onEditComment &&
+                      setComments(onEditComment(id, editComment));
+                    setEditComment("");
+                    setIsEditing(false);
+                  }}
+                />
+              </>
+            ) : (
+              <p>
+                {replyingTo && (
+                  <span className="text-blue-moderate font-bold">
+                    @{replyingTo}{" "}
+                  </span>
+                )}
+                {content}
+              </p>
+            )}
           </div>
         </div>
       </div>

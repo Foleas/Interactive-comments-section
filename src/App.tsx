@@ -7,6 +7,7 @@ import {
   UserVote,
   ScoreAction,
   AddCommentHandler,
+  EditCommentHandler,
 } from "./types";
 import React from "react";
 import { getLocalStorage, setLocalStorage } from "./utils/localStorage";
@@ -150,6 +151,31 @@ function App() {
     return updatedComments;
   };
 
+  const editComment: EditCommentHandler = (id, content, array) => {
+    const thisComments = array ? array : comments;
+
+    return thisComments.map((c) => {
+      if (c.id === id) {
+        return {
+          ...c,
+          content,
+        };
+      } else if (c.replies && c.replies.length > 0) {
+        // updateComment(comment.replies, parentId, newComment);
+        const updatedReplies: CommentItem[] = editComment(
+          id,
+          content,
+          c.replies
+        );
+        return {
+          ...c,
+          replies: updatedReplies,
+        };
+      }
+      return c;
+    });
+  };
+
   const deleteComment = (
     comments: CommentItem[],
     commentId: number
@@ -197,10 +223,12 @@ function App() {
               updateScoreData={updateScoreData}
               currentUser={currentUser}
               addCommentData={addCommentData}
+              onEditComment={editComment}
               onDeleteComment={() => {
                 setShowDeleteModal(true);
                 setCommentIdToDelete(id);
               }}
+              setComments={setComments}
             />
             {replies && replies.length > 0 && (
               <div className="replies relative ml-10 pl-10">
