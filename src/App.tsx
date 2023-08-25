@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import CommentBox from "./components/CommentBox";
 import {
   CommentItem,
@@ -10,9 +9,10 @@ import {
   EditCommentHandler,
 } from "./types";
 import React from "react";
-import { getLocalStorage, setLocalStorage } from "./utils/localStorage";
+import localStorage from "./services/localStorage";
 import ReplyBox from "./components/ReplyBox";
 import ModalDelete from "./components/ModalDelete";
+import commentService from "./services/commentService";
 
 function App() {
   const [currentUser, setCurrentUser] = useState<CommentUser>({
@@ -29,33 +29,38 @@ function App() {
   );
 
   useEffect(() => {
-    if (getLocalStorage("comments")) {
-      setCurrentUser(getLocalStorage("currentUser") as CommentUser);
-      setComments(getLocalStorage("comments") as CommentItem[]);
+    const fetchDataAsync = async () => {
+      try {
+        const currentUser = await commentService.getCurrentUser("./data.json");
+        setCurrentUser(currentUser);
+        localStorage.set("currentUser", currentUser);
+        const allComments = await commentService.getAll("./data.json");
+        setComments(allComments);
+        localStorage.set("comments", allComments);
+      } catch (error) {
+        console.error("An error occurred:", error);
+      }
+    };
+
+    if (localStorage.get("comments")) {
+      setCurrentUser(localStorage.get("currentUser") as CommentUser);
+      setComments(localStorage.get("comments") as CommentItem[]);
     } else {
-      axios
-        .get("./data.json")
-        .then((response) => {
-          const allFieldsComments = response.data.comments.map(
-            (c: CommentItem) => {
-              const updatedComment = { ...c, userVotes: [] };
-              return updatedComment;
-            }
-          );
-          setComments(allFieldsComments);
-          setCurrentUser(response.data.currentUser);
-          setLocalStorage("currentUser", response.data.currentUser);
-        })
-        .catch((error) => console.log(error));
+      fetchDataAsync();
     }
   }, []);
 
   const updateScoreData = (id: number, score: number, action: ScoreAction) => {
     const updatedComments = comments.map((comment) => {
+      const filteredUserVotes = comment.userVotes
+        ? [
+            ...comment.userVotes.filter(
+              ({ username }) => username !== currentUser?.username
+            ),
+          ]
+        : [];
       const updatedNewUserVotes: UserVote[] = [
-        ...comment.userVotes.filter(
-          ({ username }) => username !== currentUser?.username
-        ),
+        ...filteredUserVotes,
         { username: currentUser?.username, action },
       ];
       if (comment.id === id) {
@@ -84,7 +89,7 @@ function App() {
     });
 
     setComments(updatedComments);
-    setLocalStorage("comments", updatedComments);
+    localStorage.set("comments", updatedComments);
   };
 
   const addCommentData: AddCommentHandler = (
@@ -246,7 +251,7 @@ function App() {
     <main>
       <div className="comments-list-wrapper max-w-screen-md ml-auto mr-auto pt-10 pb-10">
         {renderComments(comments)}
-        {currentUser && (
+        {currentUser && currentUser.username !== "" && (
           <ReplyBox
             user={currentUser}
             buttonText="SEND"
@@ -267,7 +272,7 @@ function App() {
                 commentIdToDelete
               );
               setComments(updatedComments);
-              setLocalStorage("comments", updatedComments);
+              localStorage.set("comments", updatedComments);
               setShowDeleteModal(false);
             }
           }}
