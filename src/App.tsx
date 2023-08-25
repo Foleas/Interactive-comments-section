@@ -27,7 +27,7 @@ function App() {
 
     // actualizo estado
 
-    if (getLocalStorage("comments")) {
+    if (getLocalStorage("comments11")) {
       setCurrentUser(getLocalStorage("currentUser") as CommentUser);
       setComments(getLocalStorage("comments") as CommentItem[]);
     } else {
@@ -85,13 +85,18 @@ function App() {
     setLocalStorage("comments", updatedComments);
   };
 
-  const addCommentData: AddCommentHandler = (user, content, parentId = 0) => {
+  const addCommentData: AddCommentHandler = (
+    user,
+    content,
+    replyingTo,
+    parentId = 0
+  ) => {
     // console.log("addCommentData", "parentID", parentId);
     const newId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 
     const newComment: CommentItem = {
       id: newId,
-      content,
+      content: content.replace(`@${replyingTo}`, ""),
       createdAt: Date.now(),
       score: 0,
       user: {
@@ -101,6 +106,7 @@ function App() {
         },
         username: user.username,
       },
+      replyingTo,
       replies: [],
       userVotes: [],
     };
@@ -144,7 +150,16 @@ function App() {
   const renderComments = (comments: CommentItem[]) => {
     {
       return comments?.map((c) => {
-        const { id, content, user, createdAt, score, userVotes, replies } = c;
+        const {
+          id,
+          content,
+          user,
+          createdAt,
+          replyingTo,
+          score,
+          userVotes,
+          replies,
+        } = c;
         return (
           <React.Fragment key={`fragment-comment-${id}`}>
             <CommentBox
@@ -153,6 +168,7 @@ function App() {
               content={content}
               user={user}
               createdAt={createdAt}
+              replyingTo={replyingTo}
               userVotes={userVotes?.filter(
                 ({ username }) => username === currentUser.username
               )}

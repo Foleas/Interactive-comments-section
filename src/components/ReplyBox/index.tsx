@@ -4,20 +4,22 @@ import Button from "../common/Button";
 
 interface ReplyBoxProps {
   user: CommentUser;
+  replyingTo?: string;
   buttonText: string;
   parentId?: number;
   addCommentData: AddCommentHandler;
-  setIsReplying: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsReplying?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ReplyBox = ({
   user,
+  replyingTo = "",
   buttonText,
   parentId = 0,
   addCommentData,
   setIsReplying,
 }: ReplyBoxProps) => {
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState(replyingTo ? `@${replyingTo} ` : "");
 
   return (
     <div className="comment bg-white shadow-md rounded-md p-5 flex gap-5 items-start">
@@ -33,9 +35,9 @@ const ReplyBox = ({
         text={buttonText}
         disabled={comment === ""}
         onClickHandler={() => {
-          addCommentData(user, comment, parentId);
+          addCommentData(user, comment, replyingTo, parentId);
           setComment("");
-          setIsReplying(false);
+          setIsReplying && setIsReplying(false);
         }}
       />
     </div>

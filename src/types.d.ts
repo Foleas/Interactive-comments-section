@@ -18,6 +18,7 @@ export type CommentItem = {
   id: number;
   content: string;
   createdAt: number;
+  replyingTo?: string;
   score: number;
   user: CommentUser;
   replies: CommentItem[];
@@ -35,5 +36,6 @@ export type UpdateScoreHandler = (
 export type AddCommentHandler = (
   user: CommentUser,
   content: string,
+  replyingTo: string,
   parentId?: number
 ) => void;
