@@ -25,6 +25,7 @@ interface CommentBoxProps {
   updateScoreData: UpdateScoreHandler;
   currentUser: CommentUser;
   addCommentData: AddCommentHandler;
+  onDeleteComment?: () => void;
 }
 
 const CommentBox = (props: CommentBoxProps) => {
@@ -39,6 +40,7 @@ const CommentBox = (props: CommentBoxProps) => {
     updateScoreData,
     currentUser,
     addCommentData,
+    onDeleteComment,
   } = props;
 
   const [isReplying, setIsReplying] = useState(false);
@@ -121,7 +123,7 @@ const CommentBox = (props: CommentBoxProps) => {
                 <>
                   <button
                     className={`delete-btn ${actionButtonClass} ${actionButtonRedClass}`}
-                    onClick={() => null}
+                    onClick={onDeleteComment}
                   >
                     <IconDelete className="transition-[fill]" />
                     <p className="transition-colors">Delete</p>

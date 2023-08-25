@@ -11,6 +11,7 @@ import {
 import React from "react";
 import { getLocalStorage, setLocalStorage } from "./utils/localStorage";
 import ReplyBox from "./components/ReplyBox";
+import ModalDelete from "./components/ModalDelete";
 
 function App() {
   const [currentUser, setCurrentUser] = useState<CommentUser>({
@@ -21,13 +22,13 @@ function App() {
     username: "",
   });
   const [comments, setComments] = useState<Array<CommentItem>>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [commentIdToDelete, setCommentIdToDelete] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
-    // helper o servicio que devueleve
-
-    // actualizo estado
-
-    if (getLocalStorage("comments11")) {
+    if (getLocalStorage("comments")) {
       setCurrentUser(getLocalStorage("currentUser") as CommentUser);
       setComments(getLocalStorage("comments") as CommentItem[]);
     } else {
@@ -147,6 +148,24 @@ function App() {
     return updatedComments;
   };
 
+  const deleteComment = (
+    comments: CommentItem[],
+    commentId: number
+  ): CommentItem[] => {
+    comments.forEach((c, i, arr) => {
+      if (c.id === commentId) {
+        arr.splice(i, 1);
+        return;
+      }
+
+      if (c.replies && c.replies.length > 0) {
+        deleteComment(c.replies, commentId);
+      }
+    });
+
+    return comments;
+  };
+
   const renderComments = (comments: CommentItem[]) => {
     {
       return comments?.map((c) => {
@@ -176,6 +195,10 @@ function App() {
               updateScoreData={updateScoreData}
               currentUser={currentUser}
               addCommentData={addCommentData}
+              onDeleteComment={() => {
+                setShowDeleteModal(true);
+                setCommentIdToDelete(id);
+              }}
             />
             {replies && replies.length > 0 && (
               <div className="replies relative ml-10 pl-10">
@@ -201,6 +224,25 @@ function App() {
           />
         )}
       </div>
+      {showDeleteModal && (
+        <ModalDelete
+          onCancel={() => {
+            setShowDeleteModal(false);
+            setCommentIdToDelete(null);
+          }}
+          onConfirm={() => {
+            if (commentIdToDelete) {
+              const updatedComments = deleteComment(
+                comments,
+                commentIdToDelete
+              );
+              setComments(updatedComments);
+              setLocalStorage("comments", updatedComments);
+              setShowDeleteModal(false);
+            }
+          }}
+        />
+      )}
     </main>
   );
 }
