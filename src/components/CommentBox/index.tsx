@@ -27,7 +27,7 @@ interface CommentBoxProps {
   score: number;
   updateScoreData: UpdateScoreHandler;
   currentUser: CommentUser;
-  addCommentData: AddCommentHandler;
+  addComment: AddCommentHandler;
   onEditComment?: EditCommentItem;
   onDeleteComment?: () => void;
   allComments: CommentItem[];
@@ -45,7 +45,7 @@ const CommentBox = (props: CommentBoxProps) => {
     score,
     updateScoreData,
     currentUser,
-    addCommentData,
+    addComment,
     onEditComment,
     onDeleteComment,
     allComments,
@@ -199,7 +199,7 @@ const CommentBox = (props: CommentBoxProps) => {
           replyingTo={user.username}
           buttonText="REPLY"
           parentId={id}
-          addCommentData={addCommentData}
+          addComment={addComment}
           setIsReplying={setIsReplying}
         />
       )}
