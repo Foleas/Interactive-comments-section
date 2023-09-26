@@ -3,7 +3,6 @@ import CommentBox from "./components/CommentBox";
 import {
   CommentItem,
   CommentUser,
-  UserVote,
   ScoreAction,
   AddCommentHandler,
 } from "./types";
