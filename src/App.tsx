@@ -13,6 +13,7 @@ import localStorage from "./services/localStorage";
 import ReplyBox from "./components/ReplyBox";
 import ModalDelete from "./components/ModalDelete";
 import commentService from "./services/commentService";
+import commentsUtils from "./utils/comments";
 
 function App() {
   const [currentUser, setCurrentUser] = useState<CommentUser>({
@@ -28,15 +29,23 @@ function App() {
     null
   );
 
+  const updateCurrentUserState = (user: CommentUser) => {
+    setCurrentUser(user);
+    localStorage.set("currentUser", user);
+  };
+
+  const updateCommentsState = (comments: CommentItem[]) => {
+    setComments(comments);
+    localStorage.set("comments", comments);
+  };
+
   useEffect(() => {
     const fetchDataAsync = async () => {
       try {
         const currentUser = await commentService.getCurrentUser("./data.json");
-        setCurrentUser(currentUser);
-        localStorage.set("currentUser", currentUser);
+        updateCurrentUserState(currentUser);
         const allComments = await commentService.getAll("./data.json");
-        setComments(allComments);
-        localStorage.set("comments", allComments);
+        updateCommentsState(allComments);
       } catch (error) {
         console.error("An error occurred:", error);
       }
@@ -181,24 +190,6 @@ function App() {
     });
   };
 
-  const deleteComment = (
-    comments: CommentItem[],
-    commentId: number
-  ): CommentItem[] => {
-    comments.forEach((c, i, arr) => {
-      if (c.id === commentId) {
-        arr.splice(i, 1);
-        return;
-      }
-
-      if (c.replies && c.replies.length > 0) {
-        deleteComment(c.replies, commentId);
-      }
-    });
-
-    return comments;
-  };
-
   const renderComments = (comments: CommentItem[]) => {
     {
       return comments?.map((c) => {
@@ -267,12 +258,9 @@ function App() {
           }}
           onConfirm={() => {
             if (commentIdToDelete) {
-              const updatedComments = deleteComment(
-                comments,
-                commentIdToDelete
+              updateCommentsState(
+                commentsUtils.deleteItem(comments, commentIdToDelete)
               );
-              setComments(updatedComments);
-              localStorage.set("comments", updatedComments);
               setShowDeleteModal(false);
             }
           }}
