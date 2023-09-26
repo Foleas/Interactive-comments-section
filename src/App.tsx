@@ -123,7 +123,7 @@ function App() {
               updateCommentsState={updateCommentsState}
             />
             {replies && replies.length > 0 && (
-              <div className="replies relative ml-10 pl-10">
+              <div className="replies relative ml-10 pl-10 max-md:ml-0 max-md:pl-5">
                 <div className="border-l border-blue-light-grayish block absolute top-0 left-0 w-px h-full shadow-[-2px_0_2px_0_rgba(195,196,239,0.25)]"></div>
                 {renderComments(replies)}
               </div>
@@ -135,7 +135,7 @@ function App() {
   };
 
   return (
-    <main>
+    <main className="px-5">
       <div className="comments-list-wrapper max-w-screen-md ml-auto mr-auto pt-10 pb-10">
         {renderComments(allComments)}
         {currentUser && currentUser.username !== "" && (
