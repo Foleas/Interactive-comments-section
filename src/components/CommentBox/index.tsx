@@ -53,9 +53,7 @@ const CommentBox = (props: CommentBoxProps) => {
   } = props;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editComment, setEditComment] = useState(
-    replyingTo ? `@${replyingTo} ${content}` : content
-  );
+  const [editComment, setEditComment] = useState(content);
   const [isReplying, setIsReplying] = useState(false);
   const [scoreState, setScoreState] = useState(score);
   const [scoreAction, setScoreAction] = useState<ScoreAction>(

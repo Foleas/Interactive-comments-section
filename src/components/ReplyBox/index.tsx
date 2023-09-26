@@ -22,7 +22,7 @@ const ReplyBox = ({
   const [comment, setComment] = useState(replyingTo ? `@${replyingTo} ` : "");
 
   return (
-    <div className="comment bg-white shadow-md rounded-md p-5 flex gap-5 items-start">
+    <div className="comment bg-white shadow-md rounded-md p-5 flex gap-5 items-start mb-5">
       <img className="w-[40px]" src={user?.image.png} alt={user?.username} />
       <textarea
         name="comment"
