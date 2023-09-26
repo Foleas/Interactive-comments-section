@@ -59,43 +59,13 @@ function App() {
   }, []);
 
   const updateScoreData = (id: number, score: number, action: ScoreAction) => {
-    const updatedComments = allComments.map((comment) => {
-      const filteredUserVotes = comment.userVotes
-        ? [
-            ...comment.userVotes.filter(
-              ({ username }) => username !== currentUser?.username
-            ),
-          ]
-        : [];
-      const updatedNewUserVotes: UserVote[] = [
-        ...filteredUserVotes,
-        { username: currentUser?.username, action },
-      ];
-      if (comment.id === id) {
-        // If the comment id matches, update the score
-        return {
-          ...comment,
-          score,
-          userVotes: updatedNewUserVotes,
-        };
-      } else if (comment.replies && comment.replies.length > 0) {
-        // If there are replies, recursively update them
-        const updatedReplies = comment.replies.map((reply) => {
-          if (reply.id === id) {
-            return {
-              ...reply,
-              score,
-              userVotes: updatedNewUserVotes,
-            };
-          }
-          return reply;
-        });
-        return { ...comment, replies: updatedReplies };
-      }
-
-      return comment;
-    });
-
+    const updatedComments = commentsUtils.updateItemScore(
+      allComments,
+      id,
+      score,
+      action,
+      currentUser.username
+    );
     updateCommentsState(updatedComments);
   };
 

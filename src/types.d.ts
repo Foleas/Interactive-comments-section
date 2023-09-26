@@ -50,6 +50,14 @@ export type DeleteCommentItem = (
   commentId: number
 ) => CommentItem[];
 
+export type UpdateCommentScore = (
+  comments: CommentItem[],
+  id: number,
+  score: number,
+  action: ScoreAction,
+  currentUserName: string
+) => CommentItem[];
+
 // FUNCTIONS
 
 export type UpdateScoreHandler = (

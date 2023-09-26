@@ -3,6 +3,8 @@ import {
   DeleteCommentItem,
   EditCommentItem,
   NewCommentItem,
+  UpdateCommentScore,
+  UserVote,
 } from "../types";
 
 const newItem: NewCommentItem = (user, content, replyingTo = "") => {
@@ -80,9 +82,57 @@ const deleteItem: DeleteCommentItem = (comments, commentId) => {
   });
 };
 
+const updateItemScore: UpdateCommentScore = (
+  comments,
+  id,
+  score,
+  action,
+  currentUserName
+) => {
+  const updatedComments = comments.map((comment) => {
+    const filteredUserVotes = comment.userVotes
+      ? [
+          ...comment.userVotes.filter(
+            ({ username }) => username !== currentUserName
+          ),
+        ]
+      : [];
+    const updatedNewUserVotes: UserVote[] = [
+      ...filteredUserVotes,
+      { username: currentUserName, action },
+    ];
+    if (comment.id === id) {
+      // If the comment id matches, update the score
+      return {
+        ...comment,
+        score,
+        userVotes: updatedNewUserVotes,
+      };
+    } else if (comment.replies && comment.replies.length > 0) {
+      // If there are replies, recursively update them
+      const updatedReplies = comment.replies.map((reply) => {
+        if (reply.id === id) {
+          return {
+            ...reply,
+            score,
+            userVotes: updatedNewUserVotes,
+          };
+        }
+        return reply;
+      });
+      return { ...comment, replies: updatedReplies };
+    }
+
+    return comment;
+  });
+
+  return updatedComments;
+};
+
 export default {
   newItem,
   addItem,
   editItem,
   deleteItem,
+  updateItemScore,
 };
