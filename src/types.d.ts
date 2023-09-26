@@ -25,7 +25,32 @@ export type CommentItem = {
   userVotes: UserVote[];
 };
 
-// COMMENT HANLDLERS
+// FUNCTIONS
+
+export type GenereNewCommentItem = (
+  user: CommentUser,
+  content: string,
+  replyingTo?: string
+) => CommentItem;
+
+export type AddCommentItem = (
+  comments: CommentItem[],
+  parentId: number,
+  newComment: CommentItem
+) => CommentItem[];
+
+export type UpdateCommentItem = (
+  comments: CommentItem[],
+  id: number,
+  content: string
+) => CommentItem[];
+
+export type DeleteCommentItem = (
+  comments: CommentItem[],
+  commentId: number
+) => CommentItem[];
+
+// FUNCTIONS
 
 export type UpdateScoreHandler = (
   id: number,
