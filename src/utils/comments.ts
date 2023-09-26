@@ -1,4 +1,45 @@
-import { DeleteCommentItem } from "../types";
+import { AddCommentItem, DeleteCommentItem, NewCommentItem } from "../types";
+
+const newItem: NewCommentItem = (user, content, replyingTo = "") => {
+  return {
+    id: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
+    content: content.replace(`@${replyingTo}`, ""),
+    createdAt: Date.now(),
+    score: 0,
+    user: {
+      image: {
+        png: user.image.png,
+        webp: user.image.webp,
+      },
+      username: user.username,
+    },
+    replyingTo,
+    replies: [],
+    userVotes: [],
+  };
+};
+
+const addItem: AddCommentItem = (comments, parentId, newComment) => {
+  const updatedComments = comments.map((comment) => {
+    if (comment.id === parentId) {
+      return {
+        ...comment,
+        replies: comment.replies
+          ? [...comment.replies, newComment]
+          : [newComment],
+      };
+    } else if (comment.replies && comment.replies.length > 0) {
+      const updatedReplies = addItem(comment.replies, parentId, newComment);
+      return {
+        ...comment,
+        replies: updatedReplies,
+      };
+    }
+    return comment;
+  });
+
+  return updatedComments;
+};
 
 const deleteItem: DeleteCommentItem = (comments, commentId) => {
   return comments.filter((comment) => {
@@ -15,5 +56,7 @@ const deleteItem: DeleteCommentItem = (comments, commentId) => {
 };
 
 export default {
+  newItem,
+  addItem,
   deleteItem,
 };

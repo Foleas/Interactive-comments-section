@@ -27,7 +27,7 @@ export type CommentItem = {
 
 // FUNCTIONS
 
-export type GenereNewCommentItem = (
+export type NewCommentItem = (
   user: CommentUser,
   content: string,
   replyingTo?: string
@@ -39,7 +39,7 @@ export type AddCommentItem = (
   newComment: CommentItem
 ) => CommentItem[];
 
-export type UpdateCommentItem = (
+export type EditCommentItem = (
   comments: CommentItem[],
   id: number,
   content: string

@@ -107,62 +107,13 @@ function App() {
     replyingTo,
     parentId = 0
   ) => {
-    // console.log("addCommentData", "parentID", parentId);
-    const newId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-
-    const newComment: CommentItem = {
-      id: newId,
-      content: content.replace(`@${replyingTo}`, ""),
-      createdAt: Date.now(),
-      score: 0,
-      user: {
-        image: {
-          png: user.image.png,
-          webp: user.image.webp,
-        },
-        username: user.username,
-      },
-      replyingTo,
-      replies: [],
-      userVotes: [],
-    };
+    const newComment = commentsUtils.newItem(user, content, replyingTo);
 
     if (parentId === 0) {
       setComments([...comments, newComment]);
     } else {
-      setComments(updateComment(comments, parentId, newComment));
+      setComments(commentsUtils.addItem(comments, parentId, newComment));
     }
-  };
-
-  const updateComment = (
-    comments: CommentItem[],
-    parentId: number,
-    newComment: CommentItem
-  ) => {
-    const updatedComments = comments.map((comment) => {
-      if (comment.id === parentId) {
-        return {
-          ...comment,
-          replies: comment.replies
-            ? [...comment.replies, newComment]
-            : [newComment],
-        };
-      } else if (comment.replies && comment.replies.length > 0) {
-        // updateComment(comment.replies, parentId, newComment);
-        const updatedReplies: CommentItem[] = updateComment(
-          comment.replies,
-          parentId,
-          newComment
-        );
-        return {
-          ...comment,
-          replies: updatedReplies,
-        };
-      }
-      return comment;
-    });
-
-    return updatedComments;
   };
 
   const editComment: EditCommentHandler = (id, content, array) => {
