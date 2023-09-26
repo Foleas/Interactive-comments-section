@@ -14,12 +14,25 @@ const ScoreButton = ({
   upHandler,
   downHandler,
 }: ScoreButtonProps) => {
-  const scoreButtonClass = "w-full h-[40px] fill-blue-lightGrayish ";
+  const scoreWrapper =
+    "bg-gray-light rounded-md flex-[0_0_40px] h-[100px] flex flex-col flex-wrap";
+  const scoreWrapperSM =
+    "max-sm:flex-row max-sm:h-[40px] max-sm:w-[100px] max-sm:flex-[0_0_100px]";
+
+  const scoreWrapperXS = "max-xs:flex-auto";
+
+  const scoreButton = "fill-blue-lightGrayish flex-1";
+  const scoreButtonSM = "";
+
+  const scoreText =
+    "font-bold text-blue-moderate flex-1 flex justify-center items-center";
 
   return (
-    <div className="score flex-[0_0_40px] bg-gray-light rounded-md">
+    <div
+      className={`score ${scoreWrapper} ${scoreWrapperSM} ${scoreWrapperXS}`}
+    >
       <button
-        className={`${scoreButtonClass} ${
+        className={`${scoreButton} ${scoreButtonSM} ${
           scoreAction === "up"
             ? "cursor-not-allowed"
             : "hover:fill-blue-moderate"
@@ -29,9 +42,9 @@ const ScoreButton = ({
       >
         <IconPlus className="ml-auto mr-auto transition-[fill]" />
       </button>
-      <p className="font-bold text-blue-moderate text-center">{score}</p>
+      <p className={`${scoreText}`}>{score}</p>
       <button
-        className={`${scoreButtonClass} ${
+        className={`${scoreButton} ${scoreButtonSM} ${
           scoreAction === "down"
             ? "cursor-not-allowed"
             : "hover:fill-blue-moderate"

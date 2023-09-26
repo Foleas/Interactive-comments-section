@@ -13,6 +13,7 @@ import ReplyBox from "../ReplyBox";
 import Button from "../common/Button";
 import ScoreButton from "../common/ScoreButton";
 import ActionsButtons from "../common/ActionsButton";
+import { useWindowWidth } from "../../hooks/useWindowWidth";
 
 interface CommentBoxProps {
   id: number;
@@ -77,15 +78,19 @@ const CommentBox = (props: CommentBoxProps) => {
 
   const isSameUser = user.username === currentUser.username;
 
+  const { windowWidth } = useWindowWidth();
+
   return (
     <>
-      <div className="comment bg-white shadow-md rounded-md p-5 flex gap-5 items-start mb-5">
-        <ScoreButton
-          score={scoreState}
-          scoreAction={scoreAction}
-          upHandler={scoreUpHandler}
-          downHandler={scoreDownHandler}
-        />
+      <div className="comment bg-white shadow-md rounded-md p-5 flex flex-wrap gap-5 items-start mb-5">
+        {windowWidth >= 640 && (
+          <ScoreButton
+            score={scoreState}
+            scoreAction={scoreAction}
+            upHandler={scoreUpHandler}
+            downHandler={scoreDownHandler}
+          />
+        )}
         <div className="content flex-1">
           <div className="header flex justify-between items-center gap-3 mb-4">
             <div className="user flex items-center gap-3">
@@ -98,12 +103,14 @@ const CommentBox = (props: CommentBoxProps) => {
               )}
               <p>{getFormatedDate(createdAt)}</p>
             </div>
-            <ActionsButtons
-              sameUser={isSameUser}
-              deleteHandler={() => onDeleteComment && onDeleteComment()}
-              editHandler={() => setIsEditing(true)}
-              replyHandler={() => setIsReplying(!isReplying)}
-            />
+            {windowWidth >= 640 && (
+              <ActionsButtons
+                sameUser={isSameUser}
+                deleteHandler={() => onDeleteComment && onDeleteComment()}
+                editHandler={() => setIsEditing(true)}
+                replyHandler={() => setIsReplying(!isReplying)}
+              />
+            )}
           </div>
           <div className="comment w-full">
             {isEditing ? (
@@ -139,6 +146,23 @@ const CommentBox = (props: CommentBoxProps) => {
             )}
           </div>
         </div>
+
+        {windowWidth < 640 && (
+          <div className="footer flex-[0_0_100%] flex items-center justify-between gap-5 max-xs:flex-col max-xs:justify-center">
+            <ScoreButton
+              score={scoreState}
+              scoreAction={scoreAction}
+              upHandler={scoreUpHandler}
+              downHandler={scoreDownHandler}
+            />
+            <ActionsButtons
+              sameUser={isSameUser}
+              deleteHandler={() => onDeleteComment && onDeleteComment()}
+              editHandler={() => setIsEditing(true)}
+              replyHandler={() => setIsReplying(!isReplying)}
+            />
+          </div>
+        )}
       </div>
       {isReplying && (
         <ReplyBox
