@@ -6,7 +6,6 @@ import {
   UserVote,
   ScoreAction,
   AddCommentHandler,
-  EditCommentHandler,
 } from "./types";
 import React from "react";
 import localStorage from "./services/localStorage";
@@ -23,7 +22,7 @@ function App() {
     },
     username: "",
   });
-  const [comments, setComments] = useState<Array<CommentItem>>([]);
+  const [allComments, setAllComments] = useState<Array<CommentItem>>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [commentIdToDelete, setCommentIdToDelete] = useState<number | null>(
     null
@@ -35,7 +34,7 @@ function App() {
   };
 
   const updateCommentsState = (comments: CommentItem[]) => {
-    setComments(comments);
+    setAllComments(comments);
     localStorage.set("comments", comments);
   };
 
@@ -53,14 +52,14 @@ function App() {
 
     if (localStorage.get("comments")) {
       setCurrentUser(localStorage.get("currentUser") as CommentUser);
-      setComments(localStorage.get("comments") as CommentItem[]);
+      setAllComments(localStorage.get("comments") as CommentItem[]);
     } else {
       fetchDataAsync();
     }
   }, []);
 
   const updateScoreData = (id: number, score: number, action: ScoreAction) => {
-    const updatedComments = comments.map((comment) => {
+    const updatedComments = allComments.map((comment) => {
       const filteredUserVotes = comment.userVotes
         ? [
             ...comment.userVotes.filter(
@@ -97,8 +96,7 @@ function App() {
       return comment;
     });
 
-    setComments(updatedComments);
-    localStorage.set("comments", updatedComments);
+    updateCommentsState(updatedComments);
   };
 
   const addCommentData: AddCommentHandler = (
@@ -110,35 +108,12 @@ function App() {
     const newComment = commentsUtils.newItem(user, content, replyingTo);
 
     if (parentId === 0) {
-      setComments([...comments, newComment]);
+      updateCommentsState([...allComments, newComment]);
     } else {
-      setComments(commentsUtils.addItem(comments, parentId, newComment));
+      updateCommentsState(
+        commentsUtils.addItem(allComments, parentId, newComment)
+      );
     }
-  };
-
-  const editComment: EditCommentHandler = (id, content, array) => {
-    const thisComments = array ? array : comments;
-
-    return thisComments.map((c) => {
-      if (c.id === id) {
-        return {
-          ...c,
-          content,
-        };
-      } else if (c.replies && c.replies.length > 0) {
-        // updateComment(comment.replies, parentId, newComment);
-        const updatedReplies: CommentItem[] = editComment(
-          id,
-          content,
-          c.replies
-        );
-        return {
-          ...c,
-          replies: updatedReplies,
-        };
-      }
-      return c;
-    });
   };
 
   const renderComments = (comments: CommentItem[]) => {
@@ -170,12 +145,13 @@ function App() {
               updateScoreData={updateScoreData}
               currentUser={currentUser}
               addCommentData={addCommentData}
-              onEditComment={editComment}
+              onEditComment={commentsUtils.editItem}
               onDeleteComment={() => {
                 setShowDeleteModal(true);
                 setCommentIdToDelete(id);
               }}
-              setComments={setComments}
+              allComments={allComments}
+              updateCommentsState={updateCommentsState}
             />
             {replies && replies.length > 0 && (
               <div className="replies relative ml-10 pl-10">
@@ -192,7 +168,7 @@ function App() {
   return (
     <main>
       <div className="comments-list-wrapper max-w-screen-md ml-auto mr-auto pt-10 pb-10">
-        {renderComments(comments)}
+        {renderComments(allComments)}
         {currentUser && currentUser.username !== "" && (
           <ReplyBox
             user={currentUser}
@@ -210,7 +186,7 @@ function App() {
           onConfirm={() => {
             if (commentIdToDelete) {
               updateCommentsState(
-                commentsUtils.deleteItem(comments, commentIdToDelete)
+                commentsUtils.deleteItem(allComments, commentIdToDelete)
               );
               setShowDeleteModal(false);
             }

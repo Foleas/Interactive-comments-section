@@ -64,10 +64,3 @@ export type AddCommentHandler = (
   replyingTo: string,
   parentId?: number
 ) => void;
-
-export type EditCommentHandler = (
-  // comments: CommentItem[],
-  id: number,
-  content: string,
-  array?: CommentItem[]
-) => CommentItem[];

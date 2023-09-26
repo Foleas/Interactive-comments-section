@@ -1,4 +1,9 @@
-import { AddCommentItem, DeleteCommentItem, NewCommentItem } from "../types";
+import {
+  AddCommentItem,
+  DeleteCommentItem,
+  EditCommentItem,
+  NewCommentItem,
+} from "../types";
 
 const newItem: NewCommentItem = (user, content, replyingTo = "") => {
   return {
@@ -41,6 +46,26 @@ const addItem: AddCommentItem = (comments, parentId, newComment) => {
   return updatedComments;
 };
 
+const editItem: EditCommentItem = (comments, id, content) => {
+  const updatedComments = comments.map((comment) => {
+    if (comment.id === id) {
+      return {
+        ...comment,
+        content,
+      };
+    } else if (comment.replies && comment.replies.length > 0) {
+      const updatedReplies = editItem(comment.replies, id, content);
+      return {
+        ...comment,
+        replies: updatedReplies,
+      };
+    }
+    return comment;
+  });
+
+  return updatedComments;
+};
+
 const deleteItem: DeleteCommentItem = (comments, commentId) => {
   return comments.filter((comment) => {
     if (comment.id === commentId) {
@@ -58,5 +83,6 @@ const deleteItem: DeleteCommentItem = (comments, commentId) => {
 export default {
   newItem,
   addItem,
+  editItem,
   deleteItem,
 };

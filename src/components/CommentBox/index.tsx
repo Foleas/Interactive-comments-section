@@ -5,8 +5,8 @@ import {
   ScoreAction,
   AddCommentHandler,
   UpdateScoreHandler,
-  EditCommentHandler,
   CommentItem,
+  EditCommentItem,
 } from "../../types";
 import { ReactComponent as IconPlus } from "../../assets/icons/icon-plus.svg";
 import { ReactComponent as IconMinus } from "../../assets/icons/icon-minus.svg";
@@ -28,9 +28,10 @@ interface CommentBoxProps {
   updateScoreData: UpdateScoreHandler;
   currentUser: CommentUser;
   addCommentData: AddCommentHandler;
-  onEditComment?: EditCommentHandler;
+  onEditComment?: EditCommentItem;
   onDeleteComment?: () => void;
-  setComments: React.Dispatch<React.SetStateAction<CommentItem[]>>;
+  allComments: CommentItem[];
+  updateCommentsState: (comments: CommentItem[]) => void;
 }
 
 const CommentBox = (props: CommentBoxProps) => {
@@ -47,7 +48,8 @@ const CommentBox = (props: CommentBoxProps) => {
     addCommentData,
     onEditComment,
     onDeleteComment,
-    setComments,
+    allComments,
+    updateCommentsState,
   } = props;
 
   const [isEditing, setIsEditing] = useState(false);
@@ -172,7 +174,9 @@ const CommentBox = (props: CommentBoxProps) => {
                   disabled={editComment === ""}
                   onClickHandler={() => {
                     onEditComment &&
-                      setComments(onEditComment(id, editComment));
+                      updateCommentsState(
+                        onEditComment(allComments, id, editComment)
+                      );
                     setEditComment("");
                     setIsEditing(false);
                   }}
