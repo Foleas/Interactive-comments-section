@@ -99,7 +99,7 @@ function App() {
     updateCommentsState(updatedComments);
   };
 
-  const addCommentData: AddCommentHandler = (
+  const addComment: AddCommentHandler = (
     user,
     content,
     replyingTo,
@@ -144,7 +144,7 @@ function App() {
               score={score}
               updateScoreData={updateScoreData}
               currentUser={currentUser}
-              addCommentData={addCommentData}
+              addComment={addComment}
               onEditComment={commentsUtils.editItem}
               onDeleteComment={() => {
                 setShowDeleteModal(true);
@@ -173,7 +173,7 @@ function App() {
           <ReplyBox
             user={currentUser}
             buttonText="SEND"
-            addCommentData={addCommentData}
+            addComment={addComment}
           />
         )}
       </div>

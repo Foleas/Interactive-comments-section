@@ -7,7 +7,7 @@ interface ReplyBoxProps {
   replyingTo?: string;
   buttonText: string;
   parentId?: number;
-  addCommentData: AddCommentHandler;
+  addComment: AddCommentHandler;
   setIsReplying?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -16,7 +16,7 @@ const ReplyBox = ({
   replyingTo = "",
   buttonText,
   parentId = 0,
-  addCommentData,
+  addComment,
   setIsReplying,
 }: ReplyBoxProps) => {
   const [comment, setComment] = useState(replyingTo ? `@${replyingTo} ` : "");
@@ -35,7 +35,7 @@ const ReplyBox = ({
         text={buttonText}
         disabled={comment === ""}
         onClickHandler={() => {
-          addCommentData(user, comment, replyingTo, parentId);
+          addComment(user, comment, replyingTo, parentId);
           setComment("");
           setIsReplying && setIsReplying(false);
         }}
