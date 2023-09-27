@@ -135,7 +135,7 @@ function App() {
   };
 
   return (
-    <main className="px-5">
+    <main className="px-5 overflow-x-hidden overflow-y-auto max-h-screen">
       <div className="comments-list-wrapper max-w-screen-md ml-auto mr-auto pt-10 pb-10">
         {renderComments(allComments)}
         {currentUser && currentUser.username !== "" && (
